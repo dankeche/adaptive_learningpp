@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Result & Feedback</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .detail-item {
+            background: #f8f9fa;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 6px solid #ccc;
+        }
+        .detail-item.correct {
+            border-left-color: #34a853;
+            background: #e6f4ea;
+        }
+        .detail-item.wrong {
+            border-left-color: #d93025;
+            background: #fce8e6;
+        }
+        .answer-label {
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .correct-text { color: #137333; }
+        .wrong-text { color: #c5221f; }
+        .progress-box {
+            background: #e8f0fe;
+            border: 2px solid #1a73e8;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 25px 0;
+        }
+        .progress-box.passed {
+            background: #e6f4ea;
+            border-color: #34a853;
+        }
+        .progress-box h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container wide">
+        <h2>Quiz Completed!</h2>
+
+        <div class="result-box">
+            <p><strong>Your Score:</strong> {{ score }}%</p>
+            <p><strong>Correct Answers:</strong> {{ correct }} out of {{ total }}</p>
+            <p><strong>Class Attempted:</strong> Class {{ current_class }}</p>
+            <p><strong>Result:</strong> <span class="level">{{ level }}</span></p>
+        </div>
+
+        <!-- Progression Message -->
+        <div class="progress-box {% if passed %}passed{% endif %}">
+            {% if passed %}
+                {% if current_class < 3 %}
+                    <h3>Congratulations!</h3>
+                    <p>You have successfully passed <strong>Class {{ current_class }}</strong>.</p>
+                    <p style="font-size: 1.2rem; margin-top: 10px;">
+                        <strong>Class {{ new_class }} is now unlocked!</strong>
+                    </p>
+                {% else %}
+                    <h3>Congratulations!</h3>
+                    <p>You have completed <strong>all 3 classes</strong>. Well done!</p>
+                {% endif %}
+            {% else %}
+                <h3>Not Passed</h3>
+                <p>You scored below 85%. You are still in <strong>Class {{ current_class }}</strong>.</p>
+                <p>Please revise and try again.</p>
+            {% endif %}
+        </div>
+
+        <div class="feedback-box">
+            <h3>Instant Feedback (Rule-Based AI)</h3>
+            <p>{{ feedback }}</p>
+        </div>
+
+        <h3 style="text-align:left; margin-top:30px;">Detailed Review</h3>
+
+        {% for item in detailed_results %}
+            <div class="detail-item {{ 'correct' if item.is_correct else 'wrong' }}">
+                <p><strong>{{ loop.index }}. {{ item.question_text }}</strong></p>
+
+                <p class="answer-label">
+                    Your Answer: 
+                    <span class="{{ 'correct-text' if item.is_correct else 'wrong-text' }}">
+                        {{ item.user_answer }}
+                        {% if item.user_answer == 'A' %}( {{ item.option_a }} )
+                        {% elif item.user_answer == 'B' %}( {{ item.option_b }} )
+                        {% elif item.user_answer == 'C' %}( {{ item.option_c }} )
+                        {% elif item.user_answer == 'D' %}( {{ item.option_d }} )
+                        {% endif %}
+                    </span>
+                </p>
+
+                {% if not item.is_correct %}
+                    <p class="answer-label correct-text">
+                        Correct Answer: {{ item.correct_answer }}
+                        {% if item.correct_answer == 'A' %}( {{ item.option_a }} )
+                        {% elif item.correct_answer == 'B' %}( {{ item.option_b }} )
+                        {% elif item.correct_answer == 'C' %}( {{ item.option_c }} )
+                        {% elif item.correct_answer == 'D' %}( {{ item.option_d }} )
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="{{ url_for('dashboard') }}" class="btn" style="width: auto; padding: 12px 30px; margin-right: 10px;">Back to Dashboard</a>
+            
+            {% if passed and current_class < 3 %}
+                <a href="{{ url_for('quiz') }}" class="btn" style="width: auto; padding: 12px 30px; background: #34a853;">
+                    Proceed to Class {{ new_class }}
+                </a>
+            {% else %}
+                <a href="{{ url_for('quiz') }}" class="btn" style="width: auto; padding: 12px 30px;">
+                    Try Class {{ current_class }} Again
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

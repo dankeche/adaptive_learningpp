@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Adaptive Learning System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .summary-cards {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        .card {
+            flex: 1;
+            min-width: 140px;
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        .card h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        .card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1a73e8;
+        }
+        .level-badge {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container wide">
+        <h2>Welcome, {{ fullname }}</h2>
+        <p style="text-align:center; color:#666;">Rule-Based Adaptive Learning System</p>
+
+        <!-- Summary Cards -->
+<div class="summary-cards">
+    <div class="card">
+        <h4>Current Class</h4>
+        <div class="value">Class {{ current_class }}</div>
+    </div>
+    <div class="card">
+        <h4>Total Quizzes</h4>
+        <div class="value">{{ total_quizzes }}</div>
+    </div>
+    <div class="card">
+        <h4>Average Score</h4>
+        <div class="value">{{ average_score }}%</div>
+    </div>
+    <div class="card">
+        <h4>Latest Result</h4>
+        <div class="value" style="font-size: 1.05rem;">{{ latest_level }}</div>
+    </div>
+</div>
+        <!-- Action Buttons -->
+        <div class="dashboard-actions">
+            <a href="{{ url_for('quiz') }}" class="btn">Take Adaptive Quiz</a>
+            {% if role == 'admin' %}
+                <a href="{{ url_for('add_question') }}" class="btn">Admin Panel</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn danger">Logout</a>
+        </div>
+
+        <h3 style="text-align:left; margin-top:30px;">Your Recent Performance</h3>
+
+        {% if results %}
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Score (%)</th>
+                    <th>Questions</th>
+                    <th>Level Assigned</th>
+                </tr>
+                {% for r in results %}
+                <tr>
+                    <td>{{ r.taken_at }}</td>
+                    <td>{{ r.score }}</td>
+                    <td>{{ r.total_questions }}</td>
+                    <td><strong>{{ r.level_assigned }}</strong></td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p style="text-align:left; margin-top:15px;">No quiz taken yet. Click "Take Adaptive Quiz" to start.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

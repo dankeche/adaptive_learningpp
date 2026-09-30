@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Question - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Question (Admin)</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <label>Question Text</label>
+            <textarea name="question_text" rows="3" required></textarea>
+
+            <label>Option A</label>
+            <input type="text" name="option_a" required>
+
+            <label>Option B</label>
+            <input type="text" name="option_b" required>
+
+            <label>Option C</label>
+            <input type="text" name="option_c" required>
+
+            <label>Option D</label>
+            <input type="text" name="option_d" required>
+
+            <label>Correct Answer (A/B/C/D)</label>
+            <input type="text" name="correct_answer" maxlength="1" required>
+
+            <label>Topic</label>
+            <input type="text" name="topic" value="General">
+
+	<label>Class Level (1, 2 or 3)</label>
+<select name="class_level" required>
+    <option value="1">Class 1 (Beginner)</option>
+    <option value="2">Class 2 (Intermediate)</option>
+    <option value="3">Class 3 (Advanced)</option>
+</select>
+
+            <button type="submit">Add Question</button>
+        </form>
+        <br>
+        <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </div>
+</body>
+</html>

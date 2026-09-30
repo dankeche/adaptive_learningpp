@@ -1,0 +1,265 @@
+/* ===== Modern Adaptive Learning System CSS ===== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+/* ===== Container ===== */
+.container {
+    max-width: 480px;
+    margin: 40px auto;
+    background: white;
+    padding: 35px 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.container.wide {
+    max-width: 850px;
+}
+
+/* ===== Headings ===== */
+h2 {
+    color: #1a73e8;
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 1.8rem;
+}
+
+h3 {
+    color: #444;
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+/* ===== Form Elements ===== */
+label {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #d0d7de;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+/* ===== Buttons ===== */
+button,
+.btn {
+    display: inline-block;
+    width: 100%;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 13px;
+    margin-top: 22px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+}
+
+button:hover,
+.btn:hover {
+    background: #1557b0;
+    transform: translateY(-1px);
+}
+
+.btn.danger {
+    background: #d93025;
+}
+
+.btn.danger:hover {
+    background: #b3261e;
+}
+
+.btn-secondary {
+    background: #5f6368;
+}
+
+/* ===== Alerts ===== */
+.alert {
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.alert.success {
+    background: #e6f4ea;
+    color: #137333;
+    border-left: 4px solid #34a853;
+}
+
+.alert.danger {
+    background: #fce8e6;
+    color: #c5221f;
+    border-left: 4px solid #d93025;
+}
+
+.alert.info {
+    background: #e8f0fe;
+    color: #1967d2;
+    border-left: 4px solid #1a73e8;
+}
+
+/* ===== Question Box ===== */
+.question-box {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: 10px;
+    border-left: 5px solid #1a73e8;
+}
+
+.question-box p {
+    margin-bottom: 12px;
+    font-size: 1.05rem;
+}
+
+.question-box label {
+    display: block;
+    margin: 8px 0;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.question-box input[type="radio"] {
+    margin-right: 8px;
+    transform: scale(1.1);
+}
+
+/* ===== Result & Feedback Boxes ===== */
+.result-box {
+    background: #e8f0fe;
+    padding: 22px;
+    border-radius: 12px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.result-box p {
+    margin: 8px 0;
+    font-size: 1.1rem;
+}
+
+.level {
+    display: inline-block;
+    background: #1a73e8;
+    color: white;
+    padding: 6px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 5px;
+}
+
+.feedback-box {
+    background: #f0f7ff;
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid #c2d7f7;
+    margin-bottom: 25px;
+}
+
+.feedback-box h3 {
+    color: #1a73e8;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+/* ===== Table (Dashboard) ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+th {
+    background: #1a73e8;
+    color: white;
+    padding: 14px 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background: #f8f9fa;
+}
+
+/* ===== Links ===== */
+p {
+    text-align: center;
+    margin-top: 18px;
+    color: #555;
+}
+
+a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Dashboard specific ===== */
+.dashboard-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+.dashboard-actions .btn {
+    width: auto;
+    flex: 1;
+    min-width: 160px;
+    margin-top: 0;
+}
