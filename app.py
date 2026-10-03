@@ -1,5 +1,4 @@
 import os
-
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, render_template, request, redirect, url_for, session, flash
@@ -9,7 +8,6 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 
 # ========== DATABASE ==========
-# Render provides DATABASE_URL as an environment variable for PostgreSQL.
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db_connection():
@@ -17,13 +15,69 @@ def get_db_connection():
         raise RuntimeError("DATABASE_URL is not configured.")
     return psycopg2.connect(DATABASE_URL)
 
+def create_tables():
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            # Users table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    user_id SERIAL PRIMARY KEY,
+                    fullname VARCHAR(100) NOT NULL,
+                    email VARCHAR(100) UNIQUE NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    role VARCHAR(20) DEFAULT 'student',
+                    current_class INT DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+
+            # Questions table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS questions (
+                    question_id SERIAL PRIMARY KEY,
+                    question_text TEXT NOT NULL,
+                    option_a VARCHAR(255) NOT NULL,
+                    option_b VARCHAR(255) NOT NULL,
+                    option_c VARCHAR(255) NOT NULL,
+                    option_d VARCHAR(255) NOT NULL,
+                    correct_answer CHAR(1) NOT NULL,
+                    topic VARCHAR(100),
+                    class_level INT NOT NULL
+                )
+            ''')
+
+            # Results table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS results (
+                    result_id SERIAL PRIMARY KEY,
+                    user_id INT REFERENCES users(user_id),
+                    score DECIMAL(5,2),
+                    total_questions INT,
+                    level_assigned VARCHAR(50),
+                    taken_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+
+            # Feedback table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS feedback (
+                    feedback_id SERIAL PRIMARY KEY,
+                    result_id INT REFERENCES results(result_id),
+                    message TEXT
+                )
+            ''')
+
+        conn.commit()
+        print("✅ Tables created successfully!")
+    except Exception as e:
+        conn.rollback()
+        print("❌ Error creating tables:", e)
+    finally:
+        conn.close()
+
 # ========== RULE-BASED AI FUNCTION (85% THRESHOLD) ==========
 def evaluate_performance(score):
-    """
-    Rule-based Adaptive Algorithm
-    >= 85% -> Pass current class and unlock next class
-    < 85%  -> Remain in current class
-    """
     if score >= 85:
         level = "Passed"
         feedback = "Excellent! You scored 85% or above. You have passed this class."
@@ -32,7 +86,6 @@ def evaluate_performance(score):
         level = "Not Passed"
         feedback = "You scored below 85%. Please revise and try this class again."
         passed = False
-
     return level, feedback, passed
 
 # ========== HOME ==========
@@ -46,7 +99,6 @@ def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-
         conn = get_db_connection()
         try:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
@@ -59,15 +111,11 @@ def login():
             session["user_id"] = user["user_id"]
             session["fullname"] = user["fullname"]
             session["role"] = user["role"]
-
             flash(f"Welcome back, {user['fullname']}!", "success")
-
             if user["role"] == "admin":
                 return redirect(url_for("admin_panel"))
             return redirect(url_for("dashboard"))
-
         flash("Invalid email or password", "danger")
-
     return render_template("login.html")
 
 # ========== REGISTER ==========
@@ -84,7 +132,6 @@ def register():
             return redirect(url_for("register"))
 
         hashed_password = generate_password_hash(password)
-
         conn = get_db_connection()
         try:
             with conn.cursor() as cursor:
@@ -106,7 +153,6 @@ def register():
             flash("An error occurred during registration.", "danger")
         finally:
             conn.close()
-
     return render_template("register.html")
 
 # ========== STUDENT DASHBOARD ==========
@@ -180,7 +226,6 @@ def quiz():
             user = cursor.fetchone()
             current_class = user["current_class"] if user else 1
 
-            # PostgreSQL uses RANDOM(), not MySQL's RAND().
             cursor.execute(
                 """
                 SELECT * FROM questions
@@ -212,7 +257,6 @@ def submit_quiz():
         return redirect(url_for("login"))
 
     conn = get_db_connection()
-
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute(
@@ -225,13 +269,10 @@ def submit_quiz():
             answered_ids = [
                 key[1:] for key in request.form if key.startswith("q")
             ]
-
             if not answered_ids:
                 flash("No answers submitted", "danger")
                 return redirect(url_for("quiz"))
 
-            # IDs originate from the submitted question field names. Use
-            # PostgreSQL's ANY(%s) rather than dynamically constructing SQL.
             question_ids = [int(qid) for qid in answered_ids]
             cursor.execute(
                 """
@@ -251,7 +292,6 @@ def submit_quiz():
                 user_answer = request.form.get(f"q{qid}", "").upper()
                 correct_answer = q["correct_answer"].upper()
                 is_correct = user_answer == correct_answer
-
                 if is_correct:
                     score += 1
 
@@ -269,7 +309,6 @@ def submit_quiz():
                 )
 
             percentage = round((score / total * 100), 2) if total > 0 else 0
-
             level, feedback_msg, passed = evaluate_performance(percentage)
 
             new_class = current_class
@@ -310,9 +349,7 @@ def submit_quiz():
                 """,
                 (result_id, feedback_msg),
             )
-
         conn.commit()
-
     except Exception:
         conn.rollback()
         raise
@@ -369,7 +406,6 @@ def add_question():
             flash("Unable to add question.", "danger")
         finally:
             conn.close()
-
     return render_template("add_question.html")
 
 # ========== ADMIN PANEL ==========
@@ -501,7 +537,6 @@ def delete_question(question_id):
         flash("Unable to delete question.", "danger")
     finally:
         conn.close()
-
     return redirect(url_for("admin_panel"))
 
 # ========== LOGOUT ==========
@@ -520,6 +555,10 @@ def health():
         return "OK", 200
     except Exception:
         return "Database connection failed", 500
+
+# ========== CREATE TABLES ON STARTUP ==========
+with app.app_context():
+    create_tables()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
