@@ -539,6 +539,29 @@ def delete_question(question_id):
         conn.close()
     return redirect(url_for("admin_panel"))
 
+# ========== TEMPORARY: CREATE ADMIN ==========
+@app.route("/create-admin")
+def create_admin():
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cursor:
+            hashed_password = generate_password_hash("admin123")  # Change password later
+            cursor.execute(
+                """
+                INSERT INTO users (fullname, email, password, role, current_class)
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (email) DO NOTHING
+                """,
+                ("Admin User", "admin@gmail.com", hashed_password, "admin", 1)
+            )
+        conn.commit()
+        return "✅ Admin created successfully!<br>Email: admin@gmail.com<br>Password: admin123"
+    except Exception as e:
+        conn.rollback()
+        return f"❌ Error: {str(e)}"
+    finally:
+        conn.close()
+
 # ========== LOGOUT ==========
 @app.route("/logout")
 def logout():
